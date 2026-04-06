@@ -9,8 +9,9 @@ require (
 	github.com/alibabacloud-go/tea-utils/v2 v2.0.9
 	github.com/ghinknet/toolbox v1.10.0
 	github.com/nyaruka/phonenumbers v1.7.1
-	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.71
+	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.3.72
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.3.57
+	github.com/volcengine/volc-sdk-golang v1.0.240
 )
 
 require (
@@ -20,7 +21,9 @@ require (
 	github.com/alibabacloud-go/openapi-util v0.1.2 // indirect
 	github.com/alibabacloud-go/tea v1.4.0 // indirect
 	github.com/aliyun/credentials-go v1.4.12 // indirect
+	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/clbanning/mxj/v2 v2.7.0 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect

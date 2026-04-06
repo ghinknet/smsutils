@@ -7,16 +7,18 @@ import (
 	dysmsapi20170525 "github.com/alibabacloud-go/dysmsapi-20170525/v5/client"
 	dysmsapi20180501 "github.com/alibabacloud-go/dysmsapi-20180501/v2/client"
 	"github.com/ghinknet/smsutils/v2/aliyun"
-	model "github.com/ghinknet/smsutils/v2/config"
-	model2 "github.com/ghinknet/smsutils/v2/model"
+	"github.com/ghinknet/smsutils/v2/config"
+	"github.com/ghinknet/smsutils/v2/model"
 	"github.com/ghinknet/smsutils/v2/qcloud"
+	"github.com/ghinknet/smsutils/v2/volc"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	smsv20210111 "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
+	"github.com/volcengine/volc-sdk-golang/service/sms"
 )
 
 // createAliyunClient creates a aliyun client
-func createAliyunClient(config *model.Config) (*aliyun.Client, error) {
+func createAliyunClient(config *config.Config) (*aliyun.Client, error) {
 	// Struct aliyun client config
 	clientConfigV2 := &openapiV2.Config{
 		AccessKeyId:     &config.Aliyun.KeyID,
@@ -24,7 +26,7 @@ func createAliyunClient(config *model.Config) (*aliyun.Client, error) {
 	}
 
 	// Set aliyun endpoint
-	endpoint := model2.AliyunEndpoint
+	endpoint := model.AliyunEndpoint
 	if config.Aliyun.Endpoint != "" {
 		endpoint = config.Aliyun.Endpoint
 	}
@@ -50,7 +52,7 @@ func createAliyunClient(config *model.Config) (*aliyun.Client, error) {
 }
 
 // createQCloudClient creates a qcloud client
-func createQCloudClient(config *model.Config) (*qcloud.Client, error) {
+func createQCloudClient(config *config.Config) (*qcloud.Client, error) {
 	// Construct qcloud client config
 	clientCredential := common.NewCredential(
 		config.QCloud.SecretID,
@@ -61,8 +63,8 @@ func createQCloudClient(config *model.Config) (*qcloud.Client, error) {
 	cpf := profile.NewClientProfile()
 
 	// Set QCloud endpoint
-	endpoint := model2.QCloudEndpoint
-	region := model2.QCloudRegion
+	endpoint := model.QCloudEndpoint
+	region := model.QCloudRegion
 	if config.QCloud.Endpoint != "" {
 		endpoint = config.QCloud.Endpoint
 	}
@@ -83,8 +85,24 @@ func createQCloudClient(config *model.Config) (*qcloud.Client, error) {
 	}, nil
 }
 
+// createVolcClient creates a volc client
+func createVolcClient(config *config.Config) (*volc.Client, error) {
+	// Create volc client
+	client := sms.NewInstance().Client
+
+	// Set access key and secret key
+	sms.DefaultInstance.Client.SetAccessKey(config.Volc.AccessKey)
+	sms.DefaultInstance.Client.SetSecretKey(config.Volc.SecretKey)
+
+	return &volc.Client{
+		Client:     client,
+		Config:     config,
+		SmsAccount: config.Volc.SmsAccount,
+	}, nil
+}
+
 // CreateClient creates a unified client
-func CreateClient(config model.Config) (*Client, error) {
+func CreateClient(config config.Config) (*Client, error) {
 	// Create smsutils client
 	smsClient := new(Client)
 
@@ -117,6 +135,16 @@ func CreateClient(config model.Config) (*Client, error) {
 		}
 
 		smsClient.QCloud = qcloudClient
+	}
+
+	// Create volc client
+	if config.Volc != nil {
+		volcClient, err := createVolcClient(&config)
+		if err != nil {
+			return new(Client), err
+		}
+
+		smsClient.Volc = volcClient
 	}
 
 	return smsClient, nil

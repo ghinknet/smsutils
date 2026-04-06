@@ -14,10 +14,17 @@ type QCloudConfig struct {
 	Region      string
 }
 
+type VolcConfig struct {
+	AccessKey  string
+	SecretKey  string
+	SmsAccount string
+}
+
 type Config struct {
 	// Platform
 	Aliyun *AliyunConfig
 	QCloud *QCloudConfig
+	Volc   *VolcConfig
 	// Setting
 	Debug bool
 	// Method
