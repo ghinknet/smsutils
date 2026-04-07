@@ -1,6 +1,7 @@
 package volc
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -46,7 +47,10 @@ func (c *Client) SendMessage(to string, from string, templateCode string, templa
 		return err
 	}
 	if statusCode != 200 {
-		return fmt.Errorf("%s", result.ResponseMetadata.Error.Code)
+		if result.ResponseMetadata.Error != nil {
+			return fmt.Errorf("%s", result.ResponseMetadata.Error.Message)
+		}
+		return errors.New("unknown error happened while sending message")
 	}
 
 	return nil
