@@ -20,26 +20,27 @@ import (
 // createAliyunClient creates a aliyun client
 func createAliyunClient(config *config.Config) (*aliyun.Client, error) {
 	// Struct aliyun client config
-	clientConfigV2 := &openapiV2.Config{
+	clientConfigV2Globe := &openapiV2.Config{
+		AccessKeyId:     &config.Aliyun.KeyID,
+		AccessKeySecret: &config.Aliyun.KeySecret,
+	}
+	clientConfigV2CN := &openapiV2.Config{
 		AccessKeyId:     &config.Aliyun.KeyID,
 		AccessKeySecret: &config.Aliyun.KeySecret,
 	}
 
 	// Set aliyun endpoint
-	endpoint := model.AliyunEndpoint
-	if config.Aliyun.Endpoint != "" {
-		endpoint = config.Aliyun.Endpoint
-	}
-	clientConfigV2.Endpoint = &endpoint
+	clientConfigV2Globe.Endpoint = new(model.AliyunEndpointGlobe)
+	clientConfigV2CN.Endpoint = new(model.AliyunEndpointCN)
 
 	// Create aliyun client
 	globeResult := new(dysmsapi20180501.Client)
-	globeResult, err := dysmsapi20180501.NewClient(clientConfigV2)
+	globeResult, err := dysmsapi20180501.NewClient(clientConfigV2Globe)
 	if err != nil {
 		return new(aliyun.Client), err
 	}
 	cnResult := new(dysmsapi20170525.Client)
-	cnResult, err = dysmsapi20170525.NewClient(clientConfigV2)
+	cnResult, err = dysmsapi20170525.NewClient(clientConfigV2CN)
 	if err != nil {
 		return new(aliyun.Client), err
 	}

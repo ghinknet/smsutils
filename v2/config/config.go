@@ -3,7 +3,6 @@ package config
 type AliyunConfig struct {
 	KeyID     string
 	KeySecret string
-	Endpoint  string
 }
 
 type QCloudConfig struct {
