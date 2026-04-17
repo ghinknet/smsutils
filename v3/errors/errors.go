@@ -85,7 +85,7 @@ func WithDriverResponse(driverResponse any) Option {
 	}
 }
 
-func New(c string, options ...Option) error {
+func New(c string, options ...Option) *SmsutilsError {
 	err := &SmsutilsError{message: c}
 
 	for _, option := range options {
