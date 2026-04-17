@@ -3,7 +3,7 @@ package errors
 type SmsutilsError struct {
 	message         string
 	driverName      string
-	driverCode      int
+	driverCode      string
 	driverMessage   string
 	driverRequestID string
 	driverResponse  any
@@ -22,12 +22,12 @@ func (e *SmsutilsError) DriverName() string {
 	return e.driverName
 }
 
-func (e *SmsutilsError) WithDriverCode(code int) *SmsutilsError {
+func (e *SmsutilsError) WithDriverCode(code string) *SmsutilsError {
 	e.driverCode = code
 	return e
 }
 
-func (e *SmsutilsError) DriverCode() int {
+func (e *SmsutilsError) DriverCode() string {
 	return e.driverCode
 }
 
@@ -66,7 +66,7 @@ func WithDriverName(driverName string) Option {
 	}
 }
 
-func WithDriverCode(driverCode int) Option {
+func WithDriverCode(driverCode string) Option {
 	return func(e *SmsutilsError) {
 		e.driverCode = driverCode
 	}
