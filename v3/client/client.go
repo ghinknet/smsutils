@@ -8,7 +8,7 @@ import (
 	"github.com/ghinknet/smsutils/v3/model"
 )
 
-func NewClient(config model.Config) (map[string]model.Client, error) {
+func NewClient(config model.Config) (clients map[string]model.Client, err error) {
 	// Prepare JSON
 	if config.Marshal == nil {
 		config.Marshal = json.Marshal
@@ -17,7 +17,7 @@ func NewClient(config model.Config) (map[string]model.Client, error) {
 		config.Unmarshal = json.Unmarshal
 	}
 
-	clients := make(map[string]model.Client)
+	clients = make(map[string]model.Client)
 
 	for driverName, driverCredential := range config.Credentials {
 		// Check driver registered
@@ -27,12 +27,15 @@ func NewClient(config model.Config) (map[string]model.Client, error) {
 		}
 
 		// Create driver client
-		clients[driverName] = newDriverClient.NewClient(model.DriverClientParam{
+		clients[driverName], err = newDriverClient.NewClient(model.DriverClientParam{
 			Credential: driverCredential,
 			// JSON
 			Marshal:   config.Marshal,
 			Unmarshal: config.Unmarshal,
 		})
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return clients, nil

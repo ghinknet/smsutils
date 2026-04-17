@@ -1,7 +1,7 @@
 package model
 
 type Driver interface {
-	NewClient(params DriverClientParam) Client
+	NewClient(params DriverClientParam) (Client, error)
 }
 
 type DriverClientParam struct {
