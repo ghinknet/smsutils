@@ -101,4 +101,5 @@ func New(c string, options ...Option) *SmsutilsError {
 }
 
 var ErrDriverNotRegistered = New("driver not registered")
+var ErrDriverCredentialInvalid = New("driver credential invalid")
 var ErrDriverSendFailed = New("driver send failed")
