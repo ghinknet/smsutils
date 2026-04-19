@@ -3,7 +3,7 @@ module github.com/ghinknet/smsutils/v3
 go 1.25.0
 
 require (
-	github.com/ghinknet/toolbox v1.10.0
+	github.com/ghinknet/toolbox v1.11.1
 	github.com/nyaruka/phonenumbers v1.7.1
 )
 

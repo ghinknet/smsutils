@@ -23,7 +23,7 @@ func NewClient(config model.Config) (clients map[string]model.Client, err error)
 		// Check driver registered
 		newDriverClient, ok := state.Drivers[driverName]
 		if !ok {
-			return nil, errors.ErrDriverNotRegistered
+			return nil, errors.ErrDriverNotRegistered.WithDriverName(driverName)
 		}
 
 		// Create driver client

@@ -1,5 +1,7 @@
 package errors
 
+import "github.com/ghinknet/toolbox/pointer"
+
 type SmsutilsError struct {
 	message         string
 	driverName      string
@@ -7,15 +9,26 @@ type SmsutilsError struct {
 	driverMessage   string
 	driverRequestID string
 	driverResponse  any
+
+	raw error
 }
 
 func (e *SmsutilsError) Error() string {
 	return e.message
 }
 
+func (e *SmsutilsError) Is(err error) bool {
+	return e.raw == err
+}
+
+func (e *SmsutilsError) Unwrap() error {
+	return e.raw
+}
+
 func (e *SmsutilsError) WithDriverName(driverName string) *SmsutilsError {
-	e.driverName = driverName
-	return e
+	ne := pointer.Copy(e)
+	ne.driverName = driverName
+	return ne
 }
 
 func (e *SmsutilsError) DriverName() string {
@@ -23,8 +36,9 @@ func (e *SmsutilsError) DriverName() string {
 }
 
 func (e *SmsutilsError) WithDriverCode(code string) *SmsutilsError {
-	e.driverCode = code
-	return e
+	ne := pointer.Copy(e)
+	ne.driverCode = code
+	return ne
 }
 
 func (e *SmsutilsError) DriverCode() string {
@@ -32,8 +46,9 @@ func (e *SmsutilsError) DriverCode() string {
 }
 
 func (e *SmsutilsError) WithDriverMessage(message string) *SmsutilsError {
-	e.driverMessage = message
-	return e
+	ne := pointer.Copy(e)
+	ne.driverMessage = message
+	return ne
 }
 
 func (e *SmsutilsError) DriverMessage() string {
@@ -41,8 +56,9 @@ func (e *SmsutilsError) DriverMessage() string {
 }
 
 func (e *SmsutilsError) WithDriverRequestID(requestID string) *SmsutilsError {
-	e.driverRequestID = requestID
-	return e
+	ne := pointer.Copy(e)
+	ne.driverRequestID = requestID
+	return ne
 }
 
 func (e *SmsutilsError) DriverRequestID() string {
@@ -50,8 +66,9 @@ func (e *SmsutilsError) DriverRequestID() string {
 }
 
 func (e *SmsutilsError) WithDriverResponse(driverResponse any) *SmsutilsError {
-	e.driverResponse = driverResponse
-	return e
+	ne := pointer.Copy(e)
+	ne.driverResponse = driverResponse
+	return ne
 }
 
 func (e *SmsutilsError) DriverResponse() any {
@@ -96,6 +113,8 @@ func New(c string, options ...Option) *SmsutilsError {
 	for _, option := range options {
 		option(err)
 	}
+
+	err.raw = err
 
 	return err
 }
