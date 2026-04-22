@@ -3,9 +3,9 @@ package client
 import (
 	"encoding/json"
 
-	"github.com/ghinknet/smsutils/v3/errors"
-	"github.com/ghinknet/smsutils/v3/internal/state"
-	"github.com/ghinknet/smsutils/v3/model"
+	"go.gh.ink/smsutils/v3/errors"
+	"go.gh.ink/smsutils/v3/internal/state"
+	"go.gh.ink/smsutils/v3/model"
 )
 
 func NewClient(config model.Config) (clients map[string]model.Client, err error) {

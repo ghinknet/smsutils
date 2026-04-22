@@ -1,6 +1,6 @@
 package errors
 
-import "github.com/ghinknet/toolbox/pointer"
+import "go.gh.ink/toolbox/pointer"
 
 type SmsutilsError struct {
 	message         string

@@ -1,8 +1,8 @@
 package driver
 
 import (
-	"github.com/ghinknet/smsutils/v3/internal/state"
-	"github.com/ghinknet/smsutils/v3/model"
+	"go.gh.ink/smsutils/v3/internal/state"
+	"go.gh.ink/smsutils/v3/model"
 )
 
 func Register(name string, driver model.Driver) {

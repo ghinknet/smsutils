@@ -3,8 +3,8 @@ package utils
 import (
 	"strings"
 
-	"github.com/ghinknet/toolbox/pointer"
 	"github.com/nyaruka/phonenumbers"
+	"go.gh.ink/toolbox/pointer"
 )
 
 // ParseNumber splits a phone number into country code, national number and region code
