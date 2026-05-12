@@ -25,8 +25,18 @@ func (e *SmsutilsError) Unwrap() error {
 	return e.raw
 }
 
-func (e *SmsutilsError) WithDriverName(driverName string) *SmsutilsError {
+// clone creates a copy for chaining, preserving the reference to the original sentinel error.
+// Internal helper used by all With* methods to ensure errors.Is always works.
+func (e *SmsutilsError) clone() *SmsutilsError {
 	ne := pointer.Copy(e)
+	if ne.raw == nil {
+		ne.raw = e
+	}
+	return ne
+}
+
+func (e *SmsutilsError) WithDriverName(driverName string) *SmsutilsError {
+	ne := e.clone()
 	ne.driverName = driverName
 	return ne
 }
@@ -36,7 +46,7 @@ func (e *SmsutilsError) DriverName() string {
 }
 
 func (e *SmsutilsError) WithDriverCode(code string) *SmsutilsError {
-	ne := pointer.Copy(e)
+	ne := e.clone()
 	ne.driverCode = code
 	return ne
 }
@@ -46,7 +56,7 @@ func (e *SmsutilsError) DriverCode() string {
 }
 
 func (e *SmsutilsError) WithDriverMessage(message string) *SmsutilsError {
-	ne := pointer.Copy(e)
+	ne := e.clone()
 	ne.driverMessage = message
 	return ne
 }
@@ -56,7 +66,7 @@ func (e *SmsutilsError) DriverMessage() string {
 }
 
 func (e *SmsutilsError) WithDriverRequestID(requestID string) *SmsutilsError {
-	ne := pointer.Copy(e)
+	ne := e.clone()
 	ne.driverRequestID = requestID
 	return ne
 }
@@ -66,7 +76,7 @@ func (e *SmsutilsError) DriverRequestID() string {
 }
 
 func (e *SmsutilsError) WithDriverResponse(driverResponse any) *SmsutilsError {
-	ne := pointer.Copy(e)
+	ne := e.clone()
 	ne.driverResponse = driverResponse
 	return ne
 }
@@ -113,8 +123,6 @@ func New(c string, options ...Option) *SmsutilsError {
 	for _, option := range options {
 		option(err)
 	}
-
-	err.raw = err
 
 	return err
 }
