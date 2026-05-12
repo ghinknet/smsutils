@@ -3,7 +3,8 @@ package errors
 import "go.gh.ink/toolbox/pointer"
 
 type SmsutilsError struct {
-	message         string
+	message string
+
 	driverName      string
 	driverCode      string
 	driverMessage   string
@@ -18,6 +19,11 @@ func (e *SmsutilsError) Error() string {
 }
 
 func (e *SmsutilsError) Is(err error) bool {
+	// Check if comparing against self
+	if e == err {
+		return true
+	}
+	// Check if comparing against the raw sentinel error (for cloned errors)
 	return e.raw == err
 }
 

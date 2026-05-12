@@ -111,28 +111,49 @@ func TestSmsutilsErrorError(t *testing.T) {
 }
 
 func TestSmsutilsErrorIs(t *testing.T) {
-	baseErr := New("base error")
+	// For newly created errors, raw is nil, so Is() checks direct pointer equality
 	err1 := New("error 1")
 	err2 := New("error 2")
 
+	// Direct pointer comparison when raw is nil
 	if !err1.Is(err1) {
-		t.Errorf("Is() should return true for same error")
+		t.Errorf("Is() should return true when comparing error to itself")
 	}
 
 	if err1.Is(err2) {
-		t.Errorf("Is() should return false for different errors")
+		t.Errorf("Is() should return false for different error instances")
 	}
 
-	if err1.Is(baseErr) {
-		t.Errorf("Is() should return false for unrelated errors")
+	// For cloned errors, Is() checks if the passed error matches the raw sentinel
+	cloned1 := err1.WithDriverName("driver-1")
+	if !cloned1.Is(err1) {
+		t.Errorf("Is() should return true for cloned error checking against original sentinel")
+	}
+
+	cloned2 := err2.WithDriverName("driver-2")
+	if cloned2.Is(err1) {
+		t.Errorf("Is() should return false for cloned error from different sentinel")
+	}
+
+	// Cloned errors are different instances
+	if cloned1.Is(cloned2) {
+		t.Errorf("Is() should not match different sentinels")
 	}
 }
 
 func TestSmsutilsErrorUnwrap(t *testing.T) {
 	err := New("test error")
 
-	if unwrapped := err.Unwrap(); !errors.Is(unwrapped, err) {
-		t.Errorf("Unwrap() should return the same error")
+	// Newly created error has nil raw, so Unwrap returns nil
+	if unwrapped := err.Unwrap(); unwrapped != nil {
+		t.Errorf("Unwrap() for new error should return nil, got %v", unwrapped)
+	}
+
+	// Cloned error has raw pointing to the original sentinel
+	cloned := err.WithDriverName("driver")
+	unwrapped := cloned.Unwrap()
+	if unwrapped != err {
+		t.Errorf("Unwrap() for cloned error should return the original sentinel")
 	}
 }
 
@@ -207,7 +228,44 @@ func TestErrorPredefined(t *testing.T) {
 	if ErrDriverNotRegistered.DriverName() != "" {
 		t.Errorf("Predefined error was modified")
 	}
+
+	// Cloned error should reference the original sentinel
+	if !err.Is(ErrDriverNotRegistered) {
+		t.Errorf("Cloned predefined error should reference original sentinel with Is()")
+	}
 }
 
+func TestErrorSentinelComparison(t *testing.T) {
+	// Test errors.Is with predefined sentinel errors
+	err := ErrDriverSendFailed.WithDriverCode("E001")
 
+	if !errors.Is(err, ErrDriverSendFailed) {
+		t.Errorf("errors.Is() should work with cloned sentinel errors")
+	}
 
+	// Different sentinel should not match
+	if errors.Is(err, ErrDriverNotRegistered) {
+		t.Errorf("errors.Is() should return false for different sentinels")
+	}
+}
+
+func TestRawErrorPreservation(t *testing.T) {
+	// Test that clone preserves raw error reference for sentinel errors
+	original := New("original message")
+	cloned1 := original.WithDriverName("driver1")
+	cloned2 := cloned1.WithDriverCode("CODE")
+
+	// Both cloned errors should reference the original
+	if !cloned1.Is(original) {
+		t.Errorf("First clone should reference original")
+	}
+
+	if !cloned2.Is(original) {
+		t.Errorf("Second clone should reference original (not first clone)")
+	}
+
+	// cloned2 should not reference cloned1
+	if cloned2.Is(cloned1) && cloned1 != original {
+		t.Errorf("Cloned error should reference original sentinel, not intermediate clones")
+	}
+}
